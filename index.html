@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ledger — Panel de acciones</title>
+<title>Crypt Vigía</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%230A0D12%22/><path d=%22M20 65 L38 45 L52 58 L80 28%22 stroke=%22%2322E6A8%22 stroke-width=%228%22 fill=%22none%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,7 +18,7 @@
   <aside class="sidebar">
     <div class="brand">
       <svg width="30" height="30" viewBox="0 0 100 100"><rect width="100" height="100" rx="22" fill="#12161D"/><path d="M20 65 L38 45 L52 58 L80 28" stroke="#22E6A8" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <span>Ledger</span>
+      <span>Crypt Vigía</span>
     </div>
     <nav class="nav">
       <button class="nav-item is-active" data-view="dashboard">
@@ -91,7 +91,9 @@
               <button class="range-btn" data-range="all">Todo</button>
             </div>
           </div>
-          <canvas id="mainChart" height="230"></canvas>
+          <div class="chart-canvas-wrap">
+            <canvas id="mainChart"></canvas>
+          </div>
           <p class="chart-note">El gráfico se construye con los precios capturados desde que añadiste la acción (sesión en vivo), no con histórico externo.</p>
         </div>
 
