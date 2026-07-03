@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ledger — Panel de acciones</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%230A0D12%22/><path d=%22M20 65 L38 45 L52 58 L80 28%22 stroke=%22%2322E6A8%22 stroke-width=%228%22 fill=%22none%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="brand">
+      <svg width="30" height="30" viewBox="0 0 100 100"><rect width="100" height="100" rx="22" fill="#12161D"/><path d="M20 65 L38 45 L52 58 L80 28" stroke="#22E6A8" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Ledger</span>
+    </div>
+    <nav class="nav">
+      <button class="nav-item is-active" data-view="dashboard">
+        <svg viewBox="0 0 24 24"><path d="M4 13h6V4H4v9Zm0 7h6v-5H4v5Zm10 0h6V11h-6v9Zm0-16v5h6V4h-6Z" fill="currentColor"/></svg>
+        Panel
+      </button>
+      <button class="nav-item" data-view="stocks">
+        <svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8M21 7v6M15 7h6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Acciones
+      </button>
+      <button class="nav-item" data-view="social">
+        <svg viewBox="0 0 24 24"><path d="M18.9 3H21l-6.5 7.4L22 21h-5.9l-4.6-6-5.3 6H3.1l7-8-7.1-10h6l4.2 5.6L18.9 3Z" fill="currentColor"/></svg>
+        Cuentas X
+      </button>
+      <button class="nav-item" data-view="settings">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="none"/><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.6-2-3.4-2.3.9a7 7 0 0 0-2-1.2L14.2 3H9.8l-.4 2.5a7 7 0 0 0-2 1.2l-2.3-.9-2 3.4 2 1.6a7 7 0 0 0 0 2.4l-2 1.6 2 3.4 2.3-.9a7 7 0 0 0 2 1.2l.4 2.5h4.4l.4-2.5a7 7 0 0 0 2-1.2l2.3.9 2-3.4-2-1.6c.07-.4.1-.8.1-1.2Z" stroke="currentColor" stroke-width="1.6" fill="none"/></svg>
+        Ajustes
+      </button>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="tip-card">
+        <strong>Datos en vivo</strong>
+        <p>Añade tu clave de Finnhub en Ajustes para precios reales.</p>
+        <button class="btn btn-ghost" data-view="settings" id="tipSettingsBtn">Configurar</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <header class="topbar">
+      <div class="search">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2" fill="none"/><path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <input type="text" id="symbolSearch" placeholder="Buscar símbolo, p.ej. AAPL, MSFT…" autocomplete="off">
+        <div class="search-results" id="searchResults"></div>
+      </div>
+      <div class="topbar-actions">
+        <span class="clock" id="clock">--:--:--</span>
+        <div class="avatar">JL</div>
+      </div>
+    </header>
+
+    <!-- Ticker tape -->
+    <div class="tape-wrap">
+      <div class="tape" id="tapeTrack"><span class="tape-empty">Añade acciones a tu lista para ver la cinta en vivo →</span></div>
+    </div>
+
+    <!-- DASHBOARD VIEW -->
+    <section class="view is-active" id="view-dashboard">
+
+      <div class="cards-row" id="cardsRow">
+        <button class="card card-add" id="openAddStockDash">
+          <span class="plus">+</span>
+          <span>Añadir acción</span>
+        </button>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel chart-panel">
+          <div class="panel-head">
+            <div>
+              <h2 id="chartSymbolTitle">Selecciona una acción</h2>
+              <span class="muted" id="chartSymbolPrice">—</span>
+            </div>
+            <div class="range-toggle" id="rangeToggle">
+              <button class="range-btn is-active" data-range="30">30m</button>
+              <button class="range-btn" data-range="120">2h</button>
+              <button class="range-btn" data-range="480">8h</button>
+              <button class="range-btn" data-range="all">Todo</button>
+            </div>
+          </div>
+          <canvas id="mainChart" height="230"></canvas>
+          <p class="chart-note">El gráfico se construye con los precios capturados desde que añadiste la acción (sesión en vivo), no con histórico externo.</p>
+        </div>
+
+        <div class="panel balances-panel">
+          <div class="panel-head">
+            <h2>Resumen</h2>
+          </div>
+          <div class="summary-total">
+            <span class="muted">Acciones seguidas</span>
+            <strong id="summaryCount">0</strong>
+          </div>
+          <div class="summary-list" id="summaryList"></div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Actividad reciente</h2>
+          </div>
+          <ul class="activity-list" id="activityList">
+            <li class="empty-row">Sin actividad todavía.</li>
+          </ul>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Cuentas X</h2>
+            <button class="btn btn-ghost btn-sm" data-view="social">Ver todas</button>
+          </div>
+          <ul class="x-mini-list" id="xMiniList">
+            <li class="empty-row">Aún no sigues ninguna cuenta.</li>
+          </ul>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- STOCKS VIEW -->
+    <section class="view" id="view-stocks">
+      <div class="panel-head standalone">
+        <h2>Tu lista de acciones</h2>
+        <button class="btn btn-primary" id="openAddStockStocks">+ Añadir acción</button>
+      </div>
+      <div class="panel">
+        <table class="watchlist-table">
+          <thead>
+            <tr><th>Símbolo</th><th>Nombre</th><th>Precio</th><th>Variación</th><th>Tendencia</th><th></th></tr>
+          </thead>
+          <tbody id="watchlistBody">
+            <tr><td colspan="6" class="empty-row">Todavía no has añadido ninguna acción.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SOCIAL VIEW -->
+    <section class="view" id="view-social">
+      <div class="panel-head standalone">
+        <h2>Cuentas de X que sigues</h2>
+        <button class="btn btn-primary" id="openAddX">+ Añadir cuenta</button>
+      </div>
+      <p class="muted section-desc">Publicaciones públicas incrustadas mediante el widget oficial de X/Twitter. Si una cuenta es privada o el widget no carga, se mostrará un enlace directo al perfil.</p>
+      <div class="x-grid" id="xGrid">
+        <div class="empty-row">Añade tu primera cuenta para empezar a ver sus publicaciones.</div>
+      </div>
+    </section>
+
+    <!-- SETTINGS VIEW -->
+    <section class="view" id="view-settings">
+      <div class="panel-head standalone"><h2>Ajustes</h2></div>
+      <div class="panel settings-panel">
+        <h3>Clave API de Finnhub</h3>
+        <p class="muted">Necesaria para obtener precios reales. Consigue una gratis en <a href="https://finnhub.io/register" target="_blank" rel="noopener">finnhub.io/register</a> (plan gratuito, sin tarjeta).</p>
+        <div class="settings-row">
+          <input type="text" id="apiKeyInput" placeholder="Pega aquí tu clave de Finnhub…">
+          <button class="btn btn-primary" id="saveApiKey">Guardar</button>
+        </div>
+        <div class="api-status" id="apiStatus"></div>
+
+        <h3 style="margin-top:28px">Frecuencia de actualización</h3>
+        <p class="muted">Cada cuánto se consultan precios nuevos mientras la pestaña está abierta.</p>
+        <select id="pollInterval">
+          <option value="15000">Cada 15 segundos</option>
+          <option value="30000" selected>Cada 30 segundos</option>
+          <option value="60000">Cada 60 segundos</option>
+          <option value="0">Manual (no automático)</option>
+        </select>
+
+        <h3 style="margin-top:28px">Datos locales</h3>
+        <p class="muted">Todo se guarda en tu navegador (localStorage). Nada se envía a ningún servidor propio.</p>
+        <button class="btn btn-danger" id="resetData">Borrar todos los datos guardados</button>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- Add Stock Modal -->
+<div class="modal-backdrop" id="addStockModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Añadir acción</h3>
+      <button class="modal-close" data-close="addStockModal">&times;</button>
+    </div>
+    <label>Símbolo bursátil</label>
+    <input type="text" id="newStockSymbol" placeholder="p.ej. AAPL, TSLA, ITX.MC" autocomplete="off">
+    <div class="modal-hint">Escribe el ticker exacto tal como aparece en Finnhub/Yahoo Finance.</div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" data-close="addStockModal">Cancelar</button>
+      <button class="btn btn-primary" id="confirmAddStock">Añadir</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add X Account Modal -->
+<div class="modal-backdrop" id="addXModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Añadir cuenta de X</h3>
+      <button class="modal-close" data-close="addXModal">&times;</button>
+    </div>
+    <label>Nombre de usuario</label>
+    <input type="text" id="newXHandle" placeholder="p.ej. elonmusk (sin @)" autocomplete="off">
+    <div class="modal-actions">
+      <button class="btn btn-ghost" data-close="addXModal">Cancelar</button>
+      <button class="btn btn-primary" id="confirmAddX">Añadir</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
