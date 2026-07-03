@@ -1,4 +1,4 @@
-# Ledger — Panel de acciones y cuentas X
+# Crypt Vigía — Panel de acciones y cuentas X sin registro
 
 Dashboard estático (HTML/CSS/JS puro, sin build) listo para publicar en GitHub Pages.
 
@@ -13,23 +13,6 @@ Dashboard estático (HTML/CSS/JS puro, sin build) listo para publicar en GitHub 
 - **Ajustes**: clave API, frecuencia de actualización, borrado de datos.
 
 Todo el estado (acciones, cuentas X, clave API) se guarda en el `localStorage` de tu navegador. No hay servidor propio ni base de datos: es 100% estático, por eso funciona perfecto en GitHub Pages.
-
-## Publicar en GitHub Pages (5 minutos)
-
-1. Crea un repositorio nuevo en GitHub (puede ser público o privado si tienes plan Pro), por ejemplo `stock-dashboard`.
-2. Sube estos 3 archivos a la raíz del repositorio: `index.html`, `styles.css`, `app.js`.
-   - Puedes arrastrarlos directamente desde la web de GitHub ("Add file → Upload files") o con git:
-     ```bash
-     git init
-     git add index.html styles.css app.js
-     git commit -m "Panel de acciones inicial"
-     git branch -M main
-     git remote add origin https://github.com/TU-USUARIO/stock-dashboard.git
-     git push -u origin main
-     ```
-3. En el repositorio, ve a **Settings → Pages**.
-4. En "Build and deployment" selecciona **Source: Deploy from a branch**, rama `main`, carpeta `/ (root)`. Guarda.
-5. Espera 1-2 minutos. Tu panel quedará publicado en `https://TU-USUARIO.github.io/stock-dashboard/`.
 
 ## Activar precios reales
 
