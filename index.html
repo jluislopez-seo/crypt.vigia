@@ -77,24 +77,36 @@
         </button>
       </div>
 
-      <div class="panel chart-panel">
-        <div class="panel-head">
-          <div>
-            <h2 id="chartSymbolTitle">Selecciona una acción</h2>
-            <span class="muted" id="chartSymbolPrice">—</span>
+      <div class="grid-2">
+        <div class="panel chart-panel">
+          <div class="panel-head">
+            <div>
+              <h2 id="chartSymbolTitle">Selecciona una acción</h2>
+              <span class="muted" id="chartSymbolPrice">—</span>
+            </div>
+            <div class="range-toggle" id="rangeToggle">
+              <button class="range-btn is-active" data-range="30">30m</button>
+              <button class="range-btn" data-range="120">2h</button>
+              <button class="range-btn" data-range="480">8h</button>
+              <button class="range-btn" data-range="all">Todo</button>
+            </div>
           </div>
-          <div class="range-toggle" id="rangeToggle">
-            <button class="range-btn" data-range="now">Ahora</button>
-            <button class="range-btn" data-range="1m">1 mes</button>
-            <button class="range-btn" data-range="6m">6 meses</button>
-            <button class="range-btn" data-range="1y">1 año</button>
-            <button class="range-btn is-active" data-range="3y">3 años</button>
+          <div class="chart-canvas-wrap">
+            <canvas id="mainChart"></canvas>
           </div>
+          <p class="chart-note">El gráfico se construye con los precios capturados desde que añadiste la acción (sesión en vivo), no con histórico externo.</p>
         </div>
-        <div class="chart-canvas-wrap">
-          <canvas id="mainChart"></canvas>
+
+        <div class="panel balances-panel">
+          <div class="panel-head">
+            <h2>Resumen</h2>
+          </div>
+          <div class="summary-total">
+            <span class="muted">Acciones seguidas</span>
+            <strong id="summaryCount">0</strong>
+          </div>
+          <div class="summary-list" id="summaryList"></div>
         </div>
-        <p class="chart-note">El gráfico se construye con los precios capturados desde que añadiste la acción (sesión en vivo), no con histórico externo.</p>
       </div>
 
       <div class="grid-2">
@@ -144,7 +156,7 @@
         <h2>Cuentas de X que sigues</h2>
         <button class="btn btn-primary" id="openAddX">+ Añadir cuenta</button>
       </div>
-      <p class="muted section-desc">Gestiona aquí las cuentas que sigues. Sus timelines se muestran en el panel fijo de la derecha.</p>
+      <p class="muted section-desc">Publicaciones públicas incrustadas mediante el widget oficial de X/Twitter. Si una cuenta es privada o el widget no carga, se mostrará un enlace directo al perfil.</p>
       <div class="x-grid" id="xGrid">
         <div class="empty-row">Añade tu primera cuenta para empezar a ver sus publicaciones.</div>
       </div>
@@ -179,11 +191,6 @@
 
   </main>
 </div>
-
-<!-- X TIMELINE RAIL (siempre a la derecha, en todas las vistas) -->
-<aside class="x-rail" id="xRail">
-  <div class="x-rail-empty" id="xRailEmpty">Añade una cuenta de X para ver aquí su timeline.</div>
-</aside>
 
 <!-- Add Stock Modal -->
 <div class="modal-backdrop" id="addStockModal">
