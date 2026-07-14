@@ -266,7 +266,14 @@ function renderTable(){
   });
 }
 
-let currentRange = '30';
+const RANGE_MS = {
+  now: 30 * 60 * 1000,                 // 30 min — vista "ahora"
+  '1m': 30 * 24 * 60 * 60 * 1000,       // 1 mes
+  '6m': 182 * 24 * 60 * 60 * 1000,      // 6 meses
+  '1y': 365 * 24 * 60 * 60 * 1000,      // 1 año
+  '3y': 3 * 365 * 24 * 60 * 60 * 1000,  // 3 años
+};
+let currentRange = '3y';
 
 function renderChart(){
   const entry = findStock(state.selected);
@@ -285,11 +292,8 @@ function renderChart(){
   const up = (entry.changePct ?? 0) >= 0;
   priceEl.innerHTML = `${fmtPrice(entry.price)} <span style="color:${up?'var(--mint)':'var(--red)'}">${fmtPct(entry.changePct)}</span>`;
 
-  let hist = entry.history;
-  if (currentRange !== 'all'){
-    const cutoff = Date.now() - parseInt(currentRange, 10) * 60000;
-    hist = hist.filter(p => p.t >= cutoff);
-  }
+  const cutoff = Date.now() - (RANGE_MS[currentRange] || RANGE_MS['3y']);
+  let hist = entry.history.filter(p => p.t >= cutoff);
   if (hist.length < 2) hist = entry.history;
 
   const labels = hist.map(p => new Date(p.t).toLocaleTimeString('es-ES', { hour:'2-digit', minute:'2-digit' }));
@@ -327,23 +331,6 @@ function renderChart(){
       }
     }
   });
-}
-
-function renderSummary(){
-  document.getElementById('summaryCount').textContent = state.watchlist.length;
-  const list = document.getElementById('summaryList');
-  if (state.watchlist.length === 0){
-    list.innerHTML = '<div class="empty-row">Nada que mostrar aún.</div>';
-    return;
-  }
-  list.innerHTML = state.watchlist.map(e => {
-    const up = (e.changePct ?? 0) >= 0;
-    return `<div class="summary-row">
-      <span class="s-sym">${e.symbol}</span>
-      <span>${fmtPrice(e.price)}</span>
-      <span class="s-chg ${up?'up':'down'}">${fmtPct(e.changePct)}</span>
-    </div>`;
-  }).join('');
 }
 
 function renderActivity(){
@@ -384,7 +371,7 @@ function renderXMini(){
 function renderXGrid(){
   const grid = document.getElementById('xGrid');
   if (state.xaccounts.length === 0){
-    grid.innerHTML = '<div class="empty-row">Añade tu primera cuenta para empezar a ver sus publicaciones.</div>';
+    grid.innerHTML = '<div class="empty-row">Añade tu primera cuenta para empezar a seguirla.</div>';
     return;
   }
   grid.innerHTML = state.xaccounts.map(a => `
@@ -397,26 +384,54 @@ function renderXGrid(){
         </div>
         <button class="x-card-remove" title="Dejar de seguir">&times;</button>
       </div>
-      <div class="x-embed-wrap">
-        <a class="twitter-timeline" data-theme="dark" data-chrome="noheader nofooter noborders transparent" href="https://twitter.com/${a.handle}?ref_src=twsrc%5Etfw">Publicaciones de @${a.handle}</a>
-      </div>
     </div>
   `).join('');
   grid.querySelectorAll('.x-card-remove').forEach(btn => {
     btn.addEventListener('click', () => removeXAccount(btn.closest('.x-card').dataset.handle));
   });
-  ensureTwitterWidgets(() => { if (window.twttr) window.twttr.widgets.load(grid); });
+}
+
+function renderXRail(){
+  const rail = document.getElementById('xRail');
+  const empty = document.getElementById('xRailEmpty');
+  rail.querySelectorAll('.x-rail-item').forEach(el => el.remove());
+  if (state.xaccounts.length === 0){
+    empty.style.display = '';
+    return;
+  }
+  empty.style.display = 'none';
+  state.xaccounts.forEach(a => {
+    const item = document.createElement('div');
+    item.className = 'x-rail-item';
+    item.dataset.handle = a.handle;
+    item.innerHTML = `
+      <div class="x-rail-head">
+        <span class="x-mini-avatar">${a.handle.slice(0,2).toUpperCase()}</span>
+        <div>
+          <div class="x-handle">@${a.handle}</div>
+          <a href="https://x.com/${a.handle}" target="_blank" rel="noopener">Ver perfil ↗</a>
+        </div>
+        <button class="x-rail-remove" title="Dejar de seguir">&times;</button>
+      </div>
+      <div class="x-rail-embed-wrap">
+        <a class="twitter-timeline" data-theme="dark" data-chrome="noheader nofooter noborders transparent" data-height="400" href="https://twitter.com/${a.handle}?ref_src=twsrc%5Etfw">Publicaciones de @${a.handle}</a>
+      </div>
+    `;
+    item.querySelector('.x-rail-remove').addEventListener('click', () => removeXAccount(a.handle));
+    rail.appendChild(item);
+  });
+  ensureTwitterWidgets(() => { if (window.twttr) window.twttr.widgets.load(rail); });
 }
 
 function renderAll(){
   renderCards();
   renderTable();
   renderChart();
-  renderSummary();
   renderActivity();
   renderTape();
   renderXMini();
   renderXGrid();
+  renderXRail();
 }
 
 /* ---------------- Modals ---------------- */
